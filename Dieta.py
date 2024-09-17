@@ -53,41 +53,32 @@ def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
 st.sidebar.title('Menu')
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
 
-if opcao == 'Calculadora de Gasto Calórico':
-    st.title('Calculadora de Gasto Calórico Diário')
-    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
-# Inicializar variáveis como None
-idade = None
-peso = None
-altura = None
-
 # Função para verificar se o valor foi inserido
 def get_input(label, min_value, max_value):
-    value = st.number_input(label, min_value=min_value, max_value=max_value, value=None)
+    value = st.number_input(label, min_value=min_value, max_value=max_value)
     if value == 0:
         return None  # Retorna None se o valor ainda não foi definido
     return value
 
-st.title('Previsão de Dieta Ideal')
+if opcao == 'Calculadora de Gasto Calórico':
+    st.title('Calculadora de Gasto Calórico Diário')
+    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
+    
+    # Coletar inputs
+    idade = get_input('Idade', 0, 120)
+    peso = get_input('Peso (kg)', 0.0, 200.0)
+    altura = get_input('Altura (cm)', 0.0, 250.0)
 
-# Coletar inputs
-idade = get_input('Idade', 0, 120)
-peso = get_input('Peso (kg)', 0.0, 200.0)
-altura = get_input('Altura (cm)', 0.0, 250.0)
+    if idade is not None and peso is not None and altura is not None:
+        nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
+        tmb = calcular_tmb(sexo, peso, altura, idade)
+        gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
+        st.session_state.gasto_calorico = gasto_calorico
 
-# Verificar se todos os campos foram preenchidos antes de calcular
-if idade is not None and peso is not None and altura is not None:
-    st.write(f"Idade: {idade}, Peso: {peso}, Altura: {altura}")
-else:
-    st.warning("Por favor, preencha todos os campos.")
-    nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
-
-    tmb = calcular_tmb(sexo, peso, altura, idade)
-    gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
-    st.session_state.gasto_calorico = gasto_calorico
-
-    st.write(f"Sua Taxa Metabólica Basal (TMB) é: {tmb:.2f} calorias/dia")
-    st.write(f"Seu gasto calórico diário estimado é: {gasto_calorico:.2f} calorias/dia")
+        st.write(f"Sua Taxa Metabólica Basal (TMB) é: {tmb:.2f} calorias/dia")
+        st.write(f"Seu gasto calórico diário estimado é: {gasto_calorico:.2f} calorias/dia")
+    else:
+        st.warning("Por favor, preencha todos os campos.")
 
 elif opcao == 'Seleção de Alimentos':
     st.title('Seleção de Alimentos')
@@ -125,7 +116,6 @@ elif opcao == 'Sugestão de Refeições':
         for alimento, caloria, imagem in refeicao:
             st.write(f"- {alimento} ({caloria} kcal)")
             st.image(imagem, width=100)
-
 
     total_calorias = sum(calorias_refeicoes)
     st.write(f"**Total de calorias propostas:** {total_calorias:.2f} kcal")
