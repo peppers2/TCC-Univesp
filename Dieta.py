@@ -80,7 +80,6 @@ def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
 
     return refeicoes, calorias_refeicoes
 
-# Função para criar gráficos de calorias
 def criar_grafico_calorias_por_refeicao(calorias_refeicoes):
     fig = go.Figure()
     for i, calorias in enumerate(calorias_refeicoes):
@@ -114,6 +113,8 @@ def criar_grafico_ranking_alimentos(alimentos_calorias_consumidos):
     )
     return fig
 
+
 # Layout do Streamlit
 st.sidebar.title('Menu')
+
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
