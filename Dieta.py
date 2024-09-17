@@ -105,5 +105,6 @@ elif opcao == 'Sugestão de Refeições':
             st.write(f"- {alimento} ({caloria} kcal)")
             st.image(imagem, width=100)
 
+
     total_calorias = sum(calorias_refeicoes)
     st.write(f"**Total de calorias propostas:** {total_calorias:.2f} kcal")
