@@ -192,5 +192,20 @@ elif opcao == 'Sugestão de Refeições':
         )
         st.plotly_chart(fig_alimentos)
 
+        # Gráfico comparativo de calorias por refeição
+        fig_comparativo = go.Figure()
+        fig_comparativo.add_trace(go.Bar(
+            x=[f'Refeição {i+1}' for i in range(len(calorias_por_refeicao))],
+            y=calorias_por_refeicao,
+            marker_color='orange'
+        ))
+        fig_comparativo.update_layout(
+            title='Comparação de Calorias por Refeição',
+            xaxis_title='Refeição',
+            yaxis_title='Calorias',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_comparativo)
+
     else:
         st.write("Primeiro, calcule seu gasto calórico diário na seção 'Calculadora de Gasto Calórico'.")
