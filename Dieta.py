@@ -56,9 +56,30 @@ opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico
 if opcao == 'Calculadora de Gasto Calórico':
     st.title('Calculadora de Gasto Calórico Diário')
     sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
-    idade = st.number_input('Idade', min_value=0, max_value=120, value=0)
-    peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=0)
-    altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=0)
+# Inicializar variáveis como None
+idade = None
+peso = None
+altura = None
+
+# Função para verificar se o valor foi inserido
+def get_input(label, min_value, max_value):
+    value = st.number_input(label, min_value=min_value, max_value=max_value, value=None)
+    if value == 0:
+        return None  # Retorna None se o valor ainda não foi definido
+    return value
+
+st.title('Previsão de Dieta Ideal')
+
+# Coletar inputs
+idade = get_input('Idade', 0, 120)
+peso = get_input('Peso (kg)', 0.0, 200.0)
+altura = get_input('Altura (cm)', 0.0, 250.0)
+
+# Verificar se todos os campos foram preenchidos antes de calcular
+if idade is not None and peso is not None and altura is not None:
+    st.write(f"Idade: {idade}, Peso: {peso}, Altura: {altura}")
+else:
+    st.warning("Por favor, preencha todos os campos.")
     nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
 
     tmb = calcular_tmb(sexo, peso, altura, idade)
