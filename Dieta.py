@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import streamlit_authenticator as stauth
 
 # Configuração da página para layout wide
 st.set_page_config(
@@ -8,114 +9,120 @@ st.set_page_config(
     layout="wide"
 )
 
-# Função para calcular a TMB usando a fórmula de Harris-Benedict
-def calcular_tmb(sexo, peso, altura, idade):
-    if sexo == 'Masculino':
-        return 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
-    else:
-        return 447.0 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
+# --- Configuração de autenticação ---
+# Criação de credenciais com hash de senha
+names = ['Pedro Siqueira']
+usernames = ['pedro']
+passwords = ['123']  # A senha deve ser hashada para maior segurança em um ambiente de produção
 
-# Função para calcular o gasto calórico diário
-def calcular_gasto_calorico(tmb, nivel_atividade):
-    fatores_atividade = {
-        'Sedentário': 1.2,
-        'Levemente ativo': 1.375,
-        'Moderadamente ativo': 1.55,
-        'Muito ativo': 1.725,
-        'Extremamente ativo': 1.9
+# Geração de hashes de senha (use isso para armazenar de maneira segura)
+hashed_passwords = stauth.Hasher(passwords).generate()
+
+# Definição de credenciais no formato esperado
+credentials = {
+    "usernames": {
+        "pedro": {
+            "name": "Pedro Siqueira",
+            "password": hashed_passwords[0]  # Utilizando o hash gerado
+        }
     }
-    return tmb * fatores_atividade[nivel_atividade]
-
-# Lista de alimentos, suas calorias e imagens
-alimentos_calorias = {
-    'Maçã': {'calorias': 95, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/red-apple.jpg'},
-    'Banana': {'calorias': 105, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/banana.jpg'},
-    # Outros alimentos...
 }
 
-# Função para sugerir refeições diárias
-def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
-    alimentos = list(alimentos_calorias.items())
-    random.shuffle(alimentos)
-    refeicoes = [[] for _ in range(num_refeicoes)]
-    calorias_refeicoes = [0] * num_refeicoes
+# Autenticador (ajuste aqui, removendo o 'cookie_expiry_days')
+authenticator = stauth.Authenticate(credentials, 'app_dieta', 'abcdef')
 
-    for alimento, info in alimentos:
-        for i in range(num_refeicoes):
-            if calorias_refeicoes[i] + info['calorias'] <= calorias_maximas:
-                refeicoes[i].append((alimento, info['calorias'], info['imagem']))
-                calorias_refeicoes[i] += info['calorias']
-                break
+# Widget de login
+location = 'main'  # Use 'main' ou 'sidebar' conforme necessário
+name, authentication_status, username = authenticator.login('Login', location)
 
-    return refeicoes, calorias_refeicoes
+# Verifica o status de autenticação
+if authentication_status:
+    st.sidebar.success(f'Bem-vindo, {name}!')
+elif authentication_status == False:
+    st.error('Nome de usuário ou senha incorretos')
+elif authentication_status == None:
+    st.warning('Por favor, insira seu nome de usuário e senha')
 
-# Layout do Streamlit
-st.sidebar.title('Menu')
-opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
+if authentication_status:
+    # Função para calcular a TMB usando a fórmula de Harris-Benedict
+    def calcular_tmb(sexo, peso, altura, idade):
+        if sexo == 'Masculino':
+            tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
+        else:
+            tmb = 447.0 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
+        return tmb
 
-# Função para verificar se o valor foi inserido
-def get_input(label, min_value, max_value):
-    value = st.number_input(label, min_value=min_value, max_value=max_value)
-    if value == 0:
-        return None  # Retorna None se o valor ainda não foi definido
-    return value
+    # Função para calcular o gasto calórico diário
+    def calcular_gasto_calorico(tmb, nivel_atividade):
+        fatores_atividade = {
+            'Sedentário': 1.2,
+            'Levemente ativo': 1.375,
+            'Moderadamente ativo': 1.55,
+            'Muito ativo': 1.725,
+            'Extremamente ativo': 1.9
+        }
+        return tmb * fatores_atividade[nivel_atividade]
 
-if opcao == 'Calculadora de Gasto Calórico':
-    st.title('Calculadora de Gasto Calórico Diário')
-    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
-    
-    # Coletar inputs
-    idade = get_input('Idade', 0, 120)
-    peso = get_input('Peso (kg)', 0.0, 200.0)
-    altura = get_input('Altura (cm)', 0.0, 250.0)
+    # Lista de alimentos, suas calorias e imagens
+    alimentos_calorias = {
+        'Maçã': {'calorias': 95, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/red-apple.jpg'},
+        'Banana': {'calorias': 105, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/banana.jpg'},
+        'Ovo cozido': {'calorias': 78, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cooked-egg.jpg'},
+        'Peito de frango': {'calorias': 165, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/chicken-breast.jpg'},
+        'Arroz': {'calorias': 200, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cooked-rice.jpg'},
+        'Brócolis': {'calorias': 55, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/broccoli.jpg'},
+        'Queijo': {'calorias': 113, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cheese.jpg'},
+        'Pão integral': {'calorias': 80, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/whole-wheat-bread.jpg'},
+        'Leite': {'calorias': 149, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/milk.jpg'},
+        'Iogurte natural': {'calorias': 59, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/plain-yogurt.jpg'},
+        'Abacate': {'calorias': 160, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/avocado.jpg'},
+        'Salmão': {'calorias': 206, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/salmon.jpg'},
+        'Batata-doce': {'calorias': 86, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/sweet-potato.jpg'},
+        'Quinoa': {'calorias': 120, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/quinoa.jpg'},
+        'Espinafre': {'calorias': 23, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/spinach.jpg'},
+        'Tomate': {'calorias': 18, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/tomato.jpg'},
+        'Nozes': {'calorias': 654, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/walnuts.jpg'},
+        'Amêndoas': {'calorias': 579, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/almonds.jpg'},
+        'Azeite': {'calorias': 884, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/olive-oil.jpg'},
+        'Melancia': {'calorias': 30, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/watermelon.jpg'},
+        'Morangos': {'calorias': 32, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/strawberries.jpg'}
+    }
 
-    if idade is not None and peso is not None and altura is not None:
+    # Função para sugerir refeições diárias
+    def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
+        alimentos = list(alimentos_calorias.items())
+        random.shuffle(alimentos)  # Embaralha a lista para aleatoriedade
+        refeicoes = [[] for _ in range(num_refeicoes)]
+        calorias_refeicoes = [0] * num_refeicoes
+
+        for alimento, info in alimentos:
+            for i in range(num_refeicoes):
+                if calorias_refeicoes[i] + info['calorias'] <= calorias_maximas:
+                    refeicoes[i].append((alimento, info['calorias'], info['imagem']))
+                    calorias_refeicoes[i] += info['calorias']
+                    break
+
+        return refeicoes, calorias_refeicoes
+
+    # Layout do Streamlit
+    st.sidebar.title('Menu')
+    opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
+
+    if opcao == 'Calculadora de Gasto Calórico':
+        st.title('Calculadora de Gasto Calórico Diário')
+
+        # Entrada de dados do usuário
+        sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
+        idade = st.number_input('Idade', min_value=0, max_value=120, value=25)
+        peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=70.0)
+        altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=170.0)
         nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
+
+        # Cálculo da TMB e do gasto calórico
         tmb = calcular_tmb(sexo, peso, altura, idade)
         gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
+
+        # Armazenar o gasto calórico no estado da sessão
         st.session_state.gasto_calorico = gasto_calorico
 
-        st.write(f"Sua Taxa Metabólica Basal (TMB) é: {tmb:.2f} calorias/dia")
-        st.write(f"Seu gasto calórico diário estimado é: {gasto_calorico:.2f} calorias/dia")
-    else:
-        st.warning("Por favor, preencha todos os campos.")
-
-elif opcao == 'Seleção de Alimentos':
-    st.title('Seleção de Alimentos')
-    alimentos_selecionados = st.multiselect('Escolha seus alimentos', list(alimentos_calorias.keys()))
-    calorias_consumidas = sum(alimentos_calorias[alimento]['calorias'] for alimento in alimentos_selecionados)
-    st.write(f"Calorias totais consumidas: {calorias_consumidas:.2f} kcal")
-
-    if 'gasto_calorico' in st.session_state:
-        calorias_restantes = st.session_state.gasto_calorico - calorias_consumidas
-        st.write(f"Calorias restantes para atingir sua meta diária: {calorias_restantes:.2f} kcal")
-
-elif opcao == 'Sugestão de Dieta':
-    st.title('Sugestão de Dieta Baseada em Calorias')
-    calorias_maximas = st.number_input('Calorias máximas para a dieta (ex: 2000)', min_value=1000, max_value=5000, value=2000)
-    refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_maximas)
-
-    st.header('Sugestão de Refeições')
-    for i, (refeicao, calorias) in enumerate(zip(refeicoes, calorias_refeicoes)):
-        st.subheader(f'Refeição {i + 1} - Total de calorias: {calorias:.2f}')
-        for alimento, caloria, imagem in refeicao:
-            st.write(f"- {alimento} ({caloria} kcal)")
-            st.image(imagem, width=100)
-
-    total_calorias = sum(calorias_refeicoes)
-    st.write(f"**Total de calorias propostas:** {total_calorias:.2f} kcal")
-
-elif opcao == 'Sugestão de Refeições':
-    st.title('Sugestão de Refeições Aleatórias')
-    calorias_maximas = st.number_input('Calorias máximas por refeição', min_value=100, max_value=1500, value=600)
-    refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_maximas)
-
-    st.header('Sugestões de Refeições')
-    for i, (refeicao, calorias) in enumerate(zip(refeicoes, calorias_refeicoes)):
-        st.subheader(f'Refeição {i + 1} - Total de calorias: {calorias:.2f}')
-        for alimento, caloria, imagem in refeicao:
-            st.write(f"- {alimento} ({caloria} kcal)")
-            st.image(imagem, width=100)
-
-    total_calorias = sum(calorias_refeicoes)
-    st.write(f"**Total de calorias propostas:** {total_calorias:.2f} kcal")
+       
