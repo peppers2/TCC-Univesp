@@ -58,13 +58,24 @@ def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
     random.shuffle(alimentos)  # Embaralha a lista para aleatoriedade
     refeicoes = [[] for _ in range(num_refeicoes)]
     calorias_refeicoes = [0] * num_refeicoes
+    alimentos_utilizados = set()  # Conjunto para rastrear alimentos já usados
 
     for alimento, info in alimentos:
+        if alimento in alimentos_utilizados:
+            continue
+
+        # Tentativa de alocar o alimento em uma refeição
+        alocado = False
         for i in range(num_refeicoes):
             if calorias_refeicoes[i] + info['calorias'] <= calorias_maximas:
                 refeicoes[i].append((alimento, info['calorias'], info['imagem']))
                 calorias_refeicoes[i] += info['calorias']
+                alimentos_utilizados.add(alimento)
+                alocado = True
                 break
+
+        if not alocado:
+            break
 
     return refeicoes, calorias_refeicoes
 
