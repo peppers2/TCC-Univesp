@@ -83,7 +83,8 @@ def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
 st.sidebar.title('Menu')
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
 st.sidebar.write("")
-st.sidebar.image('logo.png', use_column_width=True) 
+st.sidebar.image('Logo.png', use_column_width=True)
+ 
 
 if opcao == 'Calculadora de Gasto Calórico':
     st.title('Calculadora de Gasto Calórico Diário')
