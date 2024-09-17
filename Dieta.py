@@ -113,8 +113,62 @@ def criar_grafico_ranking_alimentos(alimentos_calorias_consumidos):
     )
     return fig
 
-
 # Layout do Streamlit
 st.sidebar.title('Menu')
 
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
+
+if opcao == 'Calculadora de Gasto Calórico':
+    st.title('Calculadora de Gasto Calórico')
+    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
+    peso = st.number_input('Peso (kg)', min_value=0.0, format="%.2f")
+    altura = st.number_input('Altura (cm)', min_value=0.0, format="%.2f")
+    idade = st.number_input('Idade (anos)', min_value=0, format="%d")
+    nivel_atividade = st.selectbox('Nível de Atividade', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
+
+    if st.button('Calcular'):
+        tmb = calcular_tmb(sexo, peso, altura, idade)
+        gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
+        st.write(f'Taxa Metabólica Basal (TMB): {tmb:.2f} calorias/dia')
+        st.write(f'Gasto Calórico Diário: {gasto_calorico:.2f} calorias/dia')
+
+elif opcao == 'Seleção de Alimentos':
+    st.title('Seleção de Alimentos')
+    alimento_selecionado = st.selectbox('Escolha um alimento', list(alimentos_calorias.keys()))
+    info_alimento = alimentos_calorias[alimento_selecionado]
+    
+    st.image(info_alimento['imagem'], use_column_width=True)
+    st.write(f'{alimento_selecionado}: {info_alimento["calorias"]} calorias')
+
+elif opcao == 'Sugestão de Dieta':
+    st.title('Sugestão de Dieta')
+    calorias_maximas = st.number_input('Calorias máximas por refeição', min_value=0, format="%d")
+    
+    if st.button('Sugerir Dieta'):
+        refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_maximas)
+        for i, refeicao in enumerate(refeicoes):
+            st.subheader(f'Refeição {i + 1}')
+            for alimento, calorias, imagem in refeicao:
+                st.image(imagem, use_column_width=True)
+                st.write(f'{alimento}: {calorias} calorias')
+        
+        fig_calorias = criar_grafico_calorias_por_refeicao(calorias_refeicoes)
+        st.plotly_chart(fig_calorias)
+
+elif opcao == 'Sugestão de Refeições':
+    st.title('Sugestão de Refeições')
+    calorias_maximas = st.number_input('Calorias máximas por refeição', min_value=0, format="%d")
+    
+    if st.button('Sugerir Refeições'):
+        refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_maximas)
+        alimentos_calorias_consumidos = {}
+        
+        for refeicao in refeicoes:
+            for alimento, calorias, _ in refeicao:
+                if alimento in alimentos_calorias_consumidos:
+                    alimentos_calorias_consumidos[alimento] += calorias
+                else:
+                    alimentos_calorias_consumidos[alimento] = calorias
+        
+        fig_ranking = criar_grafico_ranking_alimentos(alimentos_calorias_consumidos)
+        st.plotly_chart(fig_ranking)
