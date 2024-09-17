@@ -29,27 +29,27 @@ def calcular_gasto_calorico(tmb, nivel_atividade):
 
 # Lista de alimentos, suas calorias e imagens
 alimentos_calorias = {
-    'Maçã': {'calorias': 95, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/red-apple.jpg'},
-    'Banana': {'calorias': 105, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/banana.jpg'},
-    'Ovo cozido': {'calorias': 78, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cooked-egg.jpg'},
-    'Peito de frango': {'calorias': 165, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/chicken-breast.jpg'},
-    'Arroz': {'calorias': 200, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cooked-rice.jpg'},
-    'Brócolis': {'calorias': 55, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/broccoli.jpg'},
-    'Queijo': {'calorias': 113, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/cheese.jpg'},
-    'Pão integral': {'calorias': 80, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/whole-wheat-bread.jpg'},
-    'Leite': {'calorias': 149, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/milk.jpg'},
-    'Iogurte natural': {'calorias': 59, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/plain-yogurt.jpg'},
-    'Abacate': {'calorias': 160, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/avocado.jpg'},
+    'Maçã': {'calorias': 95, 'imagem': 'https://e7.pngegg.com/pngimages/399/447/png-clipart-red-apple-illustration-juice-apple-fruit-graphy-red-apple-natural-foods-food-thumbnail.png'},
+    'Banana': {'calorias': 105, 'imagem': 'https://pt.wikipedia.org/wiki/Ficheiro:Bananas_(Alabama_Extension).jpg'},
+    'Ovo cozido': {'calorias': 78, 'imagem': 'https://static.itdg.com.br/images/auto-auto/4fcb5ddef21a1861d9680063cabe8f10/ovo-cozido.jpg'},
+    'Peito de frango': {'calorias': 165, 'imagem': 'https://www.svicente.com.br/on/demandware.static/-/Sites-storefront-catalog-sv/default/dw96334b03/Produtos/20311-0000000002031-peito%20de%20frango%20com%20pele%20e%20osso%20bandeja-acougue-1.jpg'},
+    'Arroz': {'calorias': 200, 'imagem': 'https://www.receitasnestle.com.br/sites/default/files/srh_recipes/7c44045d2e8577819cb76b2b404902dd.jpg'},
+    'Brócolis': {'calorias': 55, 'imagem': 'https://image.tuasaude.com/media/article/jd/ms/7-boas-razoes-para-comer-brocolis_14108_l.jpg'},
+    'Queijo': {'calorias': 113, 'imagem': 'https://24127.cdn.simplo7.net/static/24127/sku/queijo-queijo-de-bufala-queijo-minas-frescal-de-bufala-da-canastra-500-gramas--p-1649703125957.jpg'},
+    'Pão integral': {'calorias': 80, 'imagem': 'https://conteudo.imguol.com.br/c/entretenimento/24/2016/12/06/pao-integral-fatia-de-pao-integral-1481039924167_v2_1170x540.jpg'},
+    'Leite': {'calorias': 149, 'imagem': 'https://s3.static.brasilescola.uol.com.br/be/2022/06/leite.jpg'},
+    'Iogurte natural': {'calorias': 59, 'imagem': 'https://cdn.irmaospatrocinio.com.br/img/p/1/7/4/0/6/8/174068-large_default.jpg'},
+    'Abacate': {'calorias': 160, 'imagem': 'https://saude.abril.com.br/wp-content/uploads/2017/07/abacate3.jpg?quality=85&strip=info&w=680&h=453&crop=1'},
     'Salmão': {'calorias': 206, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/salmon.jpg'},
-    'Batata-doce': {'calorias': 86, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/sweet-potato.jpg'},
-    'Quinoa': {'calorias': 120, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/quinoa.jpg'},
-    'Espinafre': {'calorias': 23, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/spinach.jpg'},
-    'Tomate': {'calorias': 18, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/tomato.jpg'},
-    'Nozes': {'calorias': 654, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/walnuts.jpg'},
-    'Amêndoas': {'calorias': 579, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/almonds.jpg'},
-    'Azeite': {'calorias': 884, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/olive-oil.jpg'},
-    'Melancia': {'calorias': 30, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/watermelon.jpg'},
-    'Morangos': {'calorias': 32, 'imagem': 'https://www.publicdomainpictures.net/pictures/30000/velka/strawberries.jpg'}
+    'Batata-doce': {'calorias': 86, 'imagem': 'https://go-organic.com.au/wp-content/uploads/2022/01/Sweet-potato.jpg'},
+    'Quinoa': {'calorias': 120, 'imagem': 'https://alternativedish.com/wp-content/uploads/2023/07/popped-quinoa.jpg'},
+    'Espinafre': {'calorias': 23, 'imagem': 'https://www.proativaalimentos.com.br/image/cachewebp/catalog/img_prod/espinafre[1]-500x500.webp'},
+    'Tomate': {'calorias': 18, 'imagem': 'https://webrun.com.br/wp-content/uploads/2024/02/AdobeStock_69282769.jpeg'},
+    'Nozes': {'calorias': 654, 'imagem': 'https://livup-cms.imgix.net/nozes_4981e4117e.jpg'},
+    'Amêndoas': {'calorias': 579, 'imagem': 'https://seivanutri.com.br/wp-content/uploads/2020/06/amendoa-defumanda-min.jpg'},
+    'Azeite': {'calorias': 884, 'imagem': 'https://diawine.agilecdn.com.br/4189_1.jpg?v=82-845148806'},
+    'Melancia': {'calorias': 30, 'imagem': 'https://fly.metroimg.com/upload/q_85,w_700/https://uploads.metroimg.com/wp-content/uploads/2024/06/27152419/melancia-4.jpg'},
+    'Morangos': {'calorias': 32, 'imagem': 'https://media.istockphoto.com/id/1412854156/pt/foto/strawberries-isolated-strawberry-whole-and-a-half-on-white-background-strawberry-slice-with.jpg?s=612x612&w=0&k=20&c=qjoZ9imnXieGFQapcmjFvTRgHr-noWSGjFwqfMcj-nw='}
 }
 
 # Função para sugerir refeições diárias
@@ -71,6 +71,8 @@ def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
 # Layout do Streamlit
 st.sidebar.title('Menu')
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
+st.sidebar.write("")
+st.sidebar.image('logo.png', use_column_width=True) 
 
 if opcao == 'Calculadora de Gasto Calórico':
     st.title('Calculadora de Gasto Calórico Diário')
