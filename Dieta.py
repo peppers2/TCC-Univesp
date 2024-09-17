@@ -110,10 +110,12 @@ if opcao == 'Calculadora de Gasto Calórico':
 elif opcao == 'Seleção de Alimentos':
     st.title('Seleção de Alimentos')
     st.header('Selecione os alimentos que você consumiu hoje:')
-    
-    alimentos_selecionados = st.multiselect('Escolha seus alimentos', list(alimentos_calorias.keys()))
 
-    # Cálculo das calorias totais consumidas
+
+
+
+
+      # Cálculo das calorias totais consumidas
     calorias_consumidas = sum([alimentos_calorias[alimento]['calorias'] for alimento in alimentos_selecionados])
 
     # Exibição das calorias consumidas
@@ -126,9 +128,19 @@ elif opcao == 'Seleção de Alimentos':
         calorias_restantes = gasto_calorico - calorias_consumidas
 
         if calorias_restantes > 0:
-            st.write(f"Você ainda pode consumir {calorias_restantes:.2f} calorias hoje.")
+                        st.write(f"Você ainda pode consumir {calorias_restantes:.2f} calorias hoje.")
         else:
             st.write(f"Você excedeu seu gasto calórico em {-calorias_restantes:.2f} calorias hoje.")
+    
+    alimentos_selecionados = st.multiselect('Escolha seus alimentos', list(alimentos_calorias.keys()))
+
+  
+
+
+
+
+
+
 
 elif opcao == 'Sugestão de Dieta':
     st.title('Sugestão de Dieta')
