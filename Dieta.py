@@ -56,9 +56,9 @@ opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico
 if opcao == 'Calculadora de Gasto Calórico':
     st.title('Calculadora de Gasto Calórico Diário')
     sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
-    idade = st.number_input('Idade', min_value=0, max_value=120, value=25)
-    peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=70.0)
-    altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=170.0)
+    idade = st.number_input('Idade', min_value=0, max_value=120, value=0)
+    peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=0)
+    altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=0)
     nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
 
     tmb = calcular_tmb(sexo, peso, altura, idade)
