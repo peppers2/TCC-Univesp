@@ -209,3 +209,43 @@ elif opcao == 'Sugestão de Refeições':
 
     else:
         st.write("Primeiro, calcule seu gasto calórico diário na seção 'Calculadora de Gasto Calórico'.")
+
+# Layout do Streamlit
+st.title('Estimativa da Taxa Metabólica Basal (TMB) entre Refeições')
+
+if 'gasto_calorico' in st.session_state:
+    gasto_calorico = st.session_state.gasto_calorico
+    
+    # Estimativas da TMB (com base em algumas suposições, aqui simplificadas)
+    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
+    idade = st.number_input('Idade', min_value=0, max_value=120, value=25)
+    peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=70.0)
+    altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=170.0)
+    
+    tmb = calcular_tmb(sexo, peso, altura, idade)
+    
+    # Número de refeições
+    num_refeicoes = 4
+    calorias_maximas = gasto_calorico / num_refeicoes
+    
+    # Dados para o gráfico
+    refeicoes = [f'Refeição {i+1}' for i in range(num_refeicoes)]
+    tmb_estimativas = [tmb] * num_refeicoes  # TMB estimada constante entre as refeições
+
+    # Gráfico da TMB entre as refeições
+    fig_tmb = go.Figure()
+    fig_tmb.add_trace(go.Bar(
+        x=refeicoes,
+        y=tmb_estimativas,
+        marker_color='blue'
+    ))
+    fig_tmb.update_layout(
+        title='Estimativa da Taxa Metabólica Basal (TMB) entre Refeições',
+        xaxis_title='Refeição',
+        yaxis_title='TMB Estimada (calorias)',
+        template='plotly_white'
+    )
+    st.plotly_chart(fig_tmb)
+
+else:
+    st.write("Calcule seu gasto calórico diário na seção 'Calculadora de Gasto Calórico' para visualizar a TMB.")
