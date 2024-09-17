@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import plotly.graph_objects as go
 
 # Configuração da página para layout wide
 st.set_page_config(
@@ -8,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Função para calcular a TMB usando a fórmula de Harris-Benedict
+# Funções para cálculos
 def calcular_tmb(sexo, peso, altura, idade):
     if sexo == 'Masculino':
         tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
@@ -16,7 +17,6 @@ def calcular_tmb(sexo, peso, altura, idade):
         tmb = 447.0 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
     return tmb
 
-# Função para calcular o gasto calórico diário
 def calcular_gasto_calorico(tmb, nivel_atividade):
     fatores_atividade = {
         'Sedentário': 1.2,
@@ -27,7 +27,7 @@ def calcular_gasto_calorico(tmb, nivel_atividade):
     }
     return tmb * fatores_atividade[nivel_atividade]
 
-# Lista de alimentos, suas calorias e imagens
+# Dados dos alimentos
 alimentos_calorias = {
     'Maçã': {'calorias': 95, 'imagem': 'https://e7.pngegg.com/pngimages/399/447/png-clipart-red-apple-illustration-juice-apple-fruit-graphy-red-apple-natural-foods-food-thumbnail.png'},
     'Banana': {'calorias': 105, 'imagem': 'https://pt.wikipedia.org/wiki/Ficheiro:Bananas_(Alabama_Extension).jpg'},
@@ -52,19 +52,17 @@ alimentos_calorias = {
     'Morangos': {'calorias': 32, 'imagem': 'https://media.istockphoto.com/id/1412854156/pt/foto/strawberries-isolated-strawberry-whole-and-a-half-on-white-background-strawberry-slice-with.jpg?s=612x612&w=0&k=20&c=qjoZ9imnXieGFQapcmjFvTRgHr-noWSGjFwqfMcj-nw='}
 }
 
-# Função para sugerir refeições diárias
 def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
     alimentos = list(alimentos_calorias.items())
-    random.shuffle(alimentos)  # Embaralha a lista para aleatoriedade
+    random.shuffle(alimentos)
     refeicoes = [[] for _ in range(num_refeicoes)]
     calorias_refeicoes = [0] * num_refeicoes
-    alimentos_utilizados = set()  # Conjunto para rastrear alimentos já usados
+    alimentos_utilizados = set()
 
     for alimento, info in alimentos:
         if alimento in alimentos_utilizados:
             continue
 
-        # Tentativa de alocar o alimento em uma refeição
         alocado = False
         for i in range(num_refeicoes):
             if calorias_refeicoes[i] + info['calorias'] <= calorias_maximas:
@@ -84,26 +82,21 @@ st.sidebar.title('Menu')
 opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Seleção de Alimentos', 'Sugestão de Dieta', 'Sugestão de Refeições'])
 st.sidebar.write("")
 st.sidebar.image('Logo.png', use_column_width=True)
- 
 
 if opcao == 'Calculadora de Gasto Calórico':
     st.title('Calculadora de Gasto Calórico Diário')
     
-    # Entrada de dados do usuário
     sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
     idade = st.number_input('Idade', min_value=0, max_value=120, value=25)
     peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=70.0)
     altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=170.0)
     nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
 
-    # Cálculo da TMB e do gasto calórico
     tmb = calcular_tmb(sexo, peso, altura, idade)
     gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
 
-    # Armazenar o gasto calórico no estado da sessão
     st.session_state.gasto_calorico = gasto_calorico
 
-    # Exibição dos resultados
     st.write(f"Sua Taxa Metabólica Basal (TMB) é: {tmb:.2f} calorias por dia.")
     st.write(f"Seu gasto calórico diário, considerando o nível de atividade física, é: {gasto_calorico:.2f} calorias por dia.")
 
@@ -113,20 +106,16 @@ elif opcao == 'Seleção de Alimentos':
     
     alimentos_selecionados = st.multiselect('Escolha seus alimentos', list(alimentos_calorias.keys()))
 
-    # Cálculo das calorias totais consumidas
     calorias_consumidas = sum([alimentos_calorias[alimento]['calorias'] for alimento in alimentos_selecionados])
 
-    # Exibição das calorias consumidas
     st.write(f"Total de calorias consumidas: {calorias_consumidas} kcal")
 
     if 'gasto_calorico' in st.session_state:
         gasto_calorico = st.session_state.gasto_calorico
-
-        # Calorias restantes ou excedentes
         calorias_restantes = gasto_calorico - calorias_consumidas
 
         if calorias_restantes > 0:
-                        st.write(f"Você ainda pode consumir {calorias_restantes:.2f} calorias hoje.")
+            st.write(f"Você ainda pode consumir {calorias_restantes:.2f} calorias hoje.")
         else:
             st.write(f"Você excedeu seu gasto calórico em {-calorias_restantes:.2f} calorias hoje.")
 
@@ -150,13 +139,15 @@ elif opcao == 'Sugestão de Refeições':
 
     if 'gasto_calorico' in st.session_state:
         gasto_calorico = st.session_state.gasto_calorico
-        calorias_maximas = gasto_calorico / 4  # Calorias máximas por refeição
+        calorias_maximas = gasto_calorico / 4
 
         refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_maximas)
 
         st.write(f"Você pode consumir aproximadamente {calorias_maximas:.2f} calorias por refeição.")
 
         total_calorias = 0
+        calorias_por_refeicao = []
+
         for i, (refeicao, calorias) in enumerate(zip(refeicoes, calorias_refeicoes), 1):
             st.write(f"**Refeição {i}:**")
             for alimento, calorias_alimento, imagem in refeicao:
@@ -164,7 +155,42 @@ elif opcao == 'Sugestão de Refeições':
                 st.write(f"{alimento} ({calorias_alimento} kcal)")
                 total_calorias += calorias_alimento
             st.write(f"Total de calorias da Refeição {i}: {calorias:.2f} kcal")
+            calorias_por_refeicao.append(calorias)
         
         st.write(f"**Total de calorias propostas:** {total_calorias:.2f} kcal")
+
+        # Gráfico de calorias por refeição
+        fig_refeicoes = go.Figure()
+        fig_refeicoes.add_trace(go.Bar(
+            x=[f'Refeição {i+1}' for i in range(len(calorias_por_refeicao))],
+            y=calorias_por_refeicao,
+            marker_color='blue'
+        ))
+        fig_refeicoes.update_layout(
+            title='Calorias por Refeição',
+            xaxis_title='Refeição',
+            yaxis_title='Calorias',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_refeicoes)
+
+        # Gráfico de ranking de calorias consumidas por alimento
+        alimentos_consumidos = [alimento for refeicao in refeicoes for alimento, _, _ in refeicao]
+        calorias_por_alimento = {alimento: alimentos_calorias[alimento]['calorias'] for alimento in alimentos_consumidos}
+
+        fig_alimentos = go.Figure()
+        fig_alimentos.add_trace(go.Bar(
+            x=list(calorias_por_alimento.keys()),
+            y=list(calorias_por_alimento.values()),
+            marker_color='green'
+        ))
+        fig_alimentos.update_layout(
+            title='Ranking de Calorias Consumidas por Alimento',
+            xaxis_title='Alimento',
+            yaxis_title='Calorias',
+            template='plotly_white'
+        )
+        st.plotly_chart(fig_alimentos)
+
     else:
-        st.write("Primeiro, calcule seu gasto calórico diário na seção 'Calculadora de Gasto Calórico'.") criar grafico calorico por refeição usando ploty, grafico com ranking de clarorias consumas por alimentos.
+        st.write("Primeiro, calcule seu gasto calórico diário na seção 'Calculadora de Gasto Calórico'.")
