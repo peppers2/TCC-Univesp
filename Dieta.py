@@ -1,8 +1,11 @@
 import streamlit as st
 import random
-import plotly.graph_objects as go
 import pandas as pd
+import plotly.graph_objects as go
 import plotly.express as px
+from sklearn.ensemble import RandomForestClassifier
+import numpy as np
+import pickle
 
 # Configuração da página para layout wide
 st.set_page_config(
@@ -11,7 +14,7 @@ st.set_page_config(
     layout="wide"
 )
 
-# Funções para cálculos
+# Função para calcular TMB
 def calcular_tmb(sexo, peso, altura, idade):
     if sexo == 'Masculino':
         tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
@@ -19,15 +22,18 @@ def calcular_tmb(sexo, peso, altura, idade):
         tmb = 447.0 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
     return tmb
 
-def calcular_gasto_calorico(tmb, nivel_atividade):
-    fatores_atividade = {
-        'Sedentário': 1.2,
-        'Levemente ativo': 1.375,
-        'Moderadamente ativo': 1.55,
-        'Muito ativo': 1.725,
-        'Extremamente ativo': 1.9
-    }
-    return tmb * fatores_atividade[nivel_atividade]
+# Carregar modelo de Machine Learning (RandomForest)
+# Nota: Para este exemplo, estou assumindo que já há um modelo treinado salvo em 'modelo_dieta.pkl'.
+# Este modelo deve ser treinado previamente com dados adequados sobre doenças e sugestões de alimentos.
+try:
+    with open('modelo_dieta.pkl', 'rb') as f:
+        modelo_dieta = pickle.load(f)
+except FileNotFoundError:
+    st.error("Modelo de Machine Learning não encontrado. Por favor, treine e forneça o modelo adequado.")
+    st.stop()
+
+# Opções de doenças para a sugestão de dieta
+opcoes_doencas = ['Diabetes', 'Hipertensão', 'Colesterol Alto', 'Obesidade', 'Nenhuma']
 
 # Dados dos alimentos
 alimentos_calorias = {
@@ -54,30 +60,9 @@ alimentos_calorias = {
     'Morangos': {'calorias': 32, 'imagem': 'https://media.istockphoto.com/id/1412854156/pt/foto/strawberries-isolated-strawberry-whole-and-a-half-on-white-background-strawberry-slice-with.jpg?s=612x612&w=0&k=20&c=qjoZ9imnXieGFQapcmjFvTRgHr-noWSGjFwqfMcj-nw='}
 }
 
-def sugerir_refeicoes(calorias_maximas, num_refeicoes=4):
-    alimentos = list(alimentos_calorias.items())
-    random.shuffle(alimentos)
-    refeicoes = [[] for _ in range(num_refeicoes)]
-    calorias_refeicoes = [0] * num_refeicoes
-    alimentos_utilizados = set()
-
-    # Preenche as refeições até que a cota de calorias seja atingida
-    for alimento, info in alimentos:
-        if alimento in alimentos_utilizados:
-            continue
-
-        for i in range(num_refeicoes):
-            if calorias_refeicoes[i] + info['calorias'] <= calorias_maximas:
-                refeicoes[i].append((alimento, info['calorias'], info['imagem']))
-                calorias_refeicoes[i] += info['calorias']
-                alimentos_utilizados.add(alimento)
-                break  # Aloca o alimento e parte para o próximo
-
-    return refeicoes, calorias_refeicoes
-
 # Layout do Streamlit
 st.sidebar.title('Menu')
-opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Simulador de Calorias', 'Sugestão de Dieta'])
+opcao = st.sidebar.radio('Escolha uma opção', ['Calculadora de Gasto Calórico', 'Sugestão de Dieta com Machine Learning'])
 st.sidebar.write("")
 st.sidebar.image('Logo.png', use_column_width=True)
 
@@ -91,55 +76,57 @@ if opcao == 'Calculadora de Gasto Calórico':
     nivel_atividade = st.selectbox('Nível de Atividade Física', ['Sedentário', 'Levemente ativo', 'Moderadamente ativo', 'Muito ativo', 'Extremamente ativo'])
 
     tmb = calcular_tmb(sexo, peso, altura, idade)
-    gasto_calorico = calcular_gasto_calorico(tmb, nivel_atividade)
+    
+    fatores_atividade = {
+        'Sedentário': 1.2,
+        'Levemente ativo': 1.375,
+        'Moderadamente ativo': 1.55,
+        'Muito ativo': 1.725,
+        'Extremamente ativo': 1.9
+    }
+    gasto_calorico = tmb * fatores_atividade[nivel_atividade]
 
     st.session_state.gasto_calorico = gasto_calorico
 
     st.write(f"Sua Taxa Metabólica Basal (TMB) é: {tmb:.2f} calorias por dia.")
     st.write(f"Seu gasto calórico diário, considerando o nível de atividade física, é: {gasto_calorico:.2f} calorias por dia.")
 
-elif opcao == 'Simulador de Calorias':
-    st.title('Seleção de Alimentos')
-    st.subheader('Escolha os alimentos para calcular as calorias:')
+elif opcao == 'Sugestão de Dieta com Machine Learning':
+    st.title('Sugestão de Dieta com Machine Learning')
     
-    alimentos_selecionados = st.multiselect('Escolha os alimentos:', list(alimentos_calorias.keys()))
+    # Inputs do usuário para o modelo
+    st.subheader('Informe seus dados pessoais:')
+    sexo = st.selectbox('Sexo', ['Masculino', 'Feminino'])
+    idade = st.number_input('Idade', min_value=0, max_value=120, value=25)
+    peso = st.number_input('Peso (kg)', min_value=0.0, max_value=200.0, value=70.0)
+    altura = st.number_input('Altura (cm)', min_value=0.0, max_value=250.0, value=170.0)
+    doenca = st.selectbox('Alguma condição de saúde?', opcoes_doencas)
     
-    if alimentos_selecionados:
-        calorias_total = sum([alimentos_calorias[alimento]['calorias'] for alimento in alimentos_selecionados])
-        st.write(f'Você consumiu um total de {calorias_total} calorias.')
-
-        st.subheader('Detalhes dos alimentos selecionados:')
-        colunas = st.columns(len(alimentos_selecionados))
-        for i, alimento in enumerate(alimentos_selecionados):
+    # Definir parâmetros para predição
+    doenca_idx = opcoes_doencas.index(doenca)
+    sexo_bin = 1 if sexo == 'Masculino' else 0
+    
+    # Predição do modelo
+    entrada = pd.DataFrame([[idade, peso, altura, sexo_bin, doenca_idx]], columns=['idade', 'peso', 'altura', 'sexo_bin', 'doenca_idx'])
+    try:
+        dieta_sugerida = modelo_dieta.predict(entrada)[0]
+    except Exception as e:
+        st.error(f"Erro ao fazer a predição: {str(e)}")
+        st.stop()
+    
+    # Mostrar dieta sugerida
+    st.subheader('Recomendação de Alimentos:')
+    alimentos_recomendados = dieta_sugerida.split(',')
+    for alimento in alimentos_recomendados:
+        st.write(f"- {alimento}")
+    
+    st.write("Esta recomendação foi feita com base em seus dados pessoais e condições de saúde informadas.")
+    
+    # Mostrar imagem dos alimentos recomendados
+    colunas = st.columns(len(alimentos_recomendados))
+    for i, alimento in enumerate(alimentos_recomendados):
+        if alimento in alimentos_calorias:
             with colunas[i]:
                 st.image(alimentos_calorias[alimento]['imagem'], width=100)
                 st.write(alimento)
                 st.write(f"Calorias: {alimentos_calorias[alimento]['calorias']}")
-    else:
-        st.write("Nenhum alimento foi selecionado.")
-
-elif opcao == 'Sugestão de Dieta':
-    st.title('Sugestão de Dieta')
-    st.write(f"Baseado no seu gasto calórico diário de **{st.session_state.gasto_calorico:.2f}** calorias, aqui está uma sugestão de dieta balanceada.")
-    
-    calorias_por_refeicao = st.session_state.gasto_calorico / 4
-
-    # Função que retorna as refeições e as calorias totais por refeição
-    refeicoes, calorias_refeicoes = sugerir_refeicoes(calorias_por_refeicao)
-
-    total_calorias = 0  # Variável para somar as calorias das refeições
-
-    for i, refeicao in enumerate(refeicoes):
-        st.subheader(f'Refeição {i + 1}')
-        colunas = st.columns(len(refeicao))
-        for j, (alimento, calorias, imagem) in enumerate(refeicao):
-            with colunas[j]:
-                st.image(imagem, width=100)
-                st.write(alimento)
-                st.write(f"Calorias: {calorias}")
-        st.write(f"Calorias totais da refeição: {calorias_refeicoes[i]}")
-        total_calorias += calorias_refeicoes[i]  # Somando as calorias de cada refeição
-
-    # Exibindo o total de calorias sugeridas
-    st.write(f"**Total de calorias sugeridas para as 4 refeições: {total_calorias:.2f} calorias**")
-
