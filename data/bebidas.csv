@@ -1,0 +1,15 @@
+﻿Tipo;Numero;Nome;Umidade;Energia kcal;Energia kJ;Proteína;Lipídeos;Colesterol;Carboidrato;Fibra Alimentar;Cinzas;Cálcio;Magnésio;Número do;Manganês;Fósforo;Ferro;Sódio;Potássio;Cobre;Zinco;Retinol;RE;RAE ;Tiamina;Riboflavina;Piridoxina;Niacina;Vitamina C
+Bebidas (alcoólicas e não alcoólicas);470;Bebida isotônica, sabores variados;93,5;26;107;0,0;0,0;NA;6,4;NA;0,1;1;Tr;470;Tr;9;0,7;44;13;Tr;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);471;Café, infusão 10%;97,4;9;38;0,7;0,1;NA;1,5;NA;0,4;3;10;471;0,04;9;Tr;1;156;0,01;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);472;Cana, aguardente 1;;216;902;;;NA;;NA;;Tr;Tr;472;Tr;Tr;Tr;3;Tr;0,06;Tr;NA;;;Tr;Tr;Tr;Tr;
+Bebidas (alcoólicas e não alcoólicas);473;Cana, caldo de;81,7;65;273;Tr;Tr;NA;18,2;0,1;0,1;9;12;473;0,21;5;0,8;Tr;18;0,01;0,1;NA;;;Tr;Tr;0,03;Tr;2,8
+Bebidas (alcoólicas e não alcoólicas);474;Cerveja, pilsen 2;92,4;41;170;0,6;Tr;NA;3,3;NA;0,1;5;7;474;0,01;19;Tr;4;29;Tr;Tr;NA;;;Tr;Tr;0,14;2,92;Tr
+Bebidas (alcoólicas e não alcoólicas);475;Chá, erva-doce, infusão 5%;99,6;1;6;0,0;0,0;NA;0,4;NA;0,0;2;1;475;0,01;1;Tr;1;10;0,01;Tr;NA;;;1,23;0,23; ; ; 
+Bebidas (alcoólicas e não alcoólicas);476;Chá, mate, infusão 5%;99,3;3;11;0,0;0,1;NA;0,6;NA;0,0;1;2;476;0,27;Tr;Tr;Tr;5;Tr;Tr;NA;;;0,89;Tr; ; ; 
+Bebidas (alcoólicas e não alcoólicas);477;Chá, preto, infusão 5%;99,4;2;9;0,0;0,0;NA;0,6;NA;0,0;0;1;477;0,09;2;Tr;Tr;13;Tr;Tr;NA;;;3,11;0,48; ; ; 
+Bebidas (alcoólicas e não alcoólicas);478;Coco, água de;94,3;22;90;0,0;0,0;NA;5,3;0,1;0,5;19;5;478;0,25;4;Tr;2;162;Tr;Tr;NA;;;0,01;Tr;Tr;Tr;2,4
+Bebidas (alcoólicas e não alcoólicas);479;Refrigerante, tipo água tônica;92,0;31;129;0,0;0,0;NA;8,0;NA;0,0;1;Tr;479;Tr;0;Tr;8;2;Tr;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);480;Refrigerante, tipo cola;91,3;34;140;0,0;0,0;NA;8,7;NA;0,1;1;Tr;480;Tr;17;Tr;7;1;Tr;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);481;Refrigerante, tipo guaraná;90,0;39;162;0,0;0,0;NA;10,0;NA;0,0;1;Tr;481;Tr;Tr;Tr;9;1;Tr;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);482;Refrigerante, tipo laranja;88,2;46;191;0,0;0,0;NA;11,8;NA;0,0;2;1;482;Tr;1;Tr;9;16;Tr;Tr;NA;;;;;;;
+Bebidas (alcoólicas e não alcoólicas);483;Refrigerante, tipo limão;89,7;40;166;0,0;0,0;NA;10,3;NA;0,0;2;1;483;Tr;Tr;Tr;9;4;Tr;Tr;NA;;;;;;;
